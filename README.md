@@ -1,2 +1,6 @@
 # scansploit
-Exploit using barcodes, QRcodes, aztec etc....
+Tool for injecting malicious payloads into:
+Barcodes (code128)
+QRCodes
+DataMatrix
+EAN13

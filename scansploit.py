@@ -1,15 +1,29 @@
 #!/usr/bin/python3
 import logging
 import sys
+import argparse
 from pystrich.code128 import Code128Encoder
 from pystrich.qrcode import QRCodeEncoder
 from pystrich.datamatrix import DataMatrixEncoder
 from pystrich.ean13 import EAN13Encoder
 
-DATA = "https://github.com/huntergregal/scansploit"
+#ARGS
+parser = argparse.ArgumentParser(description="Tool to embed exploits into barcodes.")
+#Cusstom outfile
+parser.add_argument('-f', '--file', dest='outfile', help='Optional output file name', default=None)
+#Choose barcode type from CLI
+parser.add_argument('-b', '--barcode', dest='type', help='Use standard barcode type',  default=None)
+parser.add_argument('-q', '--qrcode', dest='type', help='Use QRcode type',  default=None)
+parser.add_argument('-d', '--datamatrix', help='Use datamatrix type',  default=None)
+parser.add_argument('-e', '--ean13', help='Use EAN13 type',  default=None)
+#Specify Payload String
+parser.add_argument('-p', '--payload', help='Specify a payload string',  default=None)
+#parse
+args = parser.parse_args()
 
 if __name__ == "__main__":
-
+    
+    if not
     choice = input("""
         What type of code would you like to generate? 
         1) Barcode (code128)

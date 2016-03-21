@@ -1,6 +1,7 @@
-=SCANSPLOIT=
-==Tool For Injecting Malicious Payloads Into:==
-Barcodes (code128)<br>
-QRCodes<br>
-DataMatrix<br>
-EAN13
+# =SCANSPLOIT=
+Tool For Injecting Malicious Payloads Into Barcodes
+
+* Barcodes (code128)
+* QRCodes
+* DataMatrix
+* EAN13

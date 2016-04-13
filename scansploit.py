@@ -7,55 +7,68 @@ from pystrich.qrcode import QRCodeEncoder
 from pystrich.datamatrix import DataMatrixEncoder
 from pystrich.ean13 import EAN13Encoder
 
-#ARGS
 parser = argparse.ArgumentParser(description="Tool to embed exploits into barcodes.")
-#Cusstom outfile
-parser.add_argument('-f', '--file', dest='outfile', help='Optional output file name', default=None)
-#Choose barcode type from CLI
-parser.add_argument('-b', '--barcode', dest='type', help='Use standard barcode type',  default=None)
-parser.add_argument('-q', '--qrcode', dest='type', help='Use QRcode type',  default=None)
-parser.add_argument('-d', '--datamatrix', help='Use datamatrix type',  default=None)
-parser.add_argument('-e', '--ean13', help='Use EAN13 type',  default=None)
-#Specify Payload String
-parser.add_argument('-p', '--payload', help='Specify a payload string',  default=None)
-#parse
+
+parser.add_argument('-f', '--file', dest='outfile', help='Output file name', required=True)
+parser.add_argument('-v', '--verbose', dest='verbose', help='Optional: verbose mode', action='store_true', default=False)
+parser.add_argument('-t', '--type', dest='type', help='Specify barcode encoding type (default: code128)', choices=["code128", "qrcode", "dmatrix", "ean13"], default="code128")
+
+
+ptype = parser.add_mutually_exclusive_group(required=True)
+ptype.add_argument('-ps', '--pstring', help='Specify payload string', type=str)
+ptype.add_argument('-pf', '--pfile', help='Specify a payload file', type=argparse.FileType('r'))
+
 args = parser.parse_args()
+	
+def code128(payload):
+	if args.verbose:
+		logging.getLogger("code128").setLevel(logging.DEBUG)
+		logging.getLogger("code128").addHandler(logging.StreamHandler(sys.stdout))
+
+	encoded = Code128Encoder(payload)
+	encoded.save(args.outfile)
+
+def qrcode(payload):
+	if args.verbose:
+		logging.getLogger("qrcode").setLevel(logging.DEBUG)
+		logging.getLogger("qrcode").addHandler(logging.StreamHandler(sys.stdout))
+
+	encoded = QRCodeEncoder(payload)
+	encoded.save(args.outfile, 3)
+
+def dmatrix(payload): 
+	if args.verbose:
+		logging.getLogger("datamatrix").setLevel(logging.DEBUG)
+		logging.getLogger("datamatrix").addHandler(logging.StreamHandler(sys.stdout))
+
+	encoded = DataMatrixEncoder(payload)
+	encoded.save(args.outfile)
+
+def ean13(payload):
+	if args.verbose:
+		logging.getLogger("ean13").setLevel(logging.DEBUG)
+		logging.getLogger("ean13").addHandler(logging.StreamHandler(sys.stdout))
+
+	encoded = DataMatrixEncoder(payload)
+	encoded.save(args.outfile)
 
 if __name__ == "__main__":
-    
-    if not
-    choice = input("""
-        What type of code would you like to generate? 
-        1) Barcode (code128)
-        2) QRcode
-        3) DataMatrix
-        4) EAN13
-        Choice: """)
+	if args.pstring:
+		payload = args.pstring
+	elif args.pfile:
+		pfile = args.pfile
+		try:
+			payload = pfile.read()
+		except:
+			print("Payload data not ASCII! QUITTING")
+			exit()
 
-    if choice == "1":
-        logging.getLogger("code128").setLevel(logging.DEBUG)
-        logging.getLogger("code128").addHandler(logging.StreamHandler(sys.stdout))
-
-        encoded = Code128Encoder(DATA)
-        encoded.save("barcode.png")
-
-    elif choice == "2":
-        logging.getLogger("qrcode").setLevel(logging.DEBUG)
-        logging.getLogger("qrcode").addHandler(logging.StreamHandler(sys.stdout))
-
-        encoded = QRCodeEncoder(DATA)
-        encoded.save("qrcode.png", 3)
-    
-    elif choice == "3":
-        logging.getLogger("datamatrix").setLevel(logging.DEBUG)
-        logging.getLogger("datamatrix").addHandler(logging.StreamHandler(sys.stdout))
-
-        encoded = DataMatrixEncoder(DATA)
-        encoded.save("datamatrix.png")
-
-    elif choice == "4":
-        logging.getLogger("ean13").setLevel(logging.DEBUG)
-        logging.getLogger("ean13").addHandler(logging.StreamHandler(sys.stdout))
-
-        encoded = DataMatrixEncoder(DATA)
-        encoded.save("ean13.png")
+	if args.type == "code128":
+		code128(payload)
+	elif args.type == "qrcode":
+		qrcode(payload)
+	elif args.type == "dmatrix":
+		dmatrix(payload)
+	elif args.type == "ean13":
+		ean13(payload)
+	print("Barcode Payload Generated!")
